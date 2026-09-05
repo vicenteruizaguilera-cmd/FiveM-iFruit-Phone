@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>iFruit Michael Edition</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Arial", sans-serif; user-select: none; }
+        body { background-color: #0d0d0d; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        
+        /* Carcasa exacta de Michael gris azulada */
+        #phone { width: 100%; height: 100%; max-width: 400px; max-height: 820px; background: #000; position: relative; display: flex; flex-direction: column; overflow: hidden; border-radius: 40px; box-shadow: 0px 20px 50px rgba(0,0,0,0.9); border: 10px solid #5A6A7C; }
+        
+        #brand-header { height: 28px; background: #000; color: #fff; display: flex; justify-content: center; align-items: center; font-size: 13px; font-weight: bold; }
+        
+        #status-bar { height: 26px; display: flex; justify-content: space-between; align-items: center; padding: 0 18px; color: #ffffff; font-size: 12px; background: #000; font-weight: bold; }
+        .status-icons { display: flex; gap: 5px; align-items: center; }
+        
+        /* Barra Gris de la App de la foto */
+        #app-header-bar { height: 40px; background: linear-gradient(180deg, #6F7D8C 0%, #4B5663 100%); display: flex; justify-content: center; align-items: center; color: white; font-size: 20px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); border-bottom: 2px solid #333C46; }
+        
+        /* Mosaico de Triángulos Azules */
+        #screen-content { 
+            flex: 1; 
+            padding: 30px 20px; 
+            display: flex; 
+            flex-direction: column; 
+            position: relative;
+            background-color: #007bb6;
+            background-image: 
+                linear-gradient(135deg, #005f8d 25%, transparent 25%), 
+                linear-gradient(225deg, #005f8d 25%, transparent 25%), 
+                linear-gradient(45deg, #005f8d 25%, transparent 25%), 
+                linear-gradient(315deg, #005f8d 25%, #007bb6 25%);
+            background-position: 20px 0, 20px 0, 0 0, 0 0;
+            background-size: 40px 40px;
+            background-repeat: repeat;
+        }
+        
+        #app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px 15px; }
+        .app-icon { display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative; }
+        
+        /* Globo de Notificación "7" */
+        .badge { position: absolute; top: -5px; left: 10px; background: #E74C3C; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: bold; display: flex; justify-content: center; align-items: center; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 5; }
+        
+        /* Iconos Relieve 3D */
+        .icon-shape { width: 72px; height: 72px; border-radius: 18px; display: flex; justify-content: center; align-items: center; font-size: 34px; box-shadow: inset 0px 4px 8px rgba(255,255,255,0.4), 0px 6px 12px rgba(0,0,0,0.5); border: 1px solid rgba(0,0,0,0.4); position: relative; overflow: hidden; transition: transform 0.1s; }
+        .icon-shape::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%); border-radius: 18px 18px 0 0; }
+        .app-icon:active .icon-shape { transform: scale(0.9); }
+        
+        #app-viewer { display: none; position: absolute; top: 0; bottom: 0; left: 0; right: 0; background: #151A21; color: white; padding: 25px 20px; flex-direction: column; z-index: 10; }
+        #app-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; border-bottom: 2px solid #6F7D8C; padding-bottom: 8px; color: #6F7D8C; text-transform: uppercase; }
+        #app-body { flex: 1; font-size: 16px; line-height: 1.6; overflow-y: auto; }
+        
+        #nav-bar { height: 60px; background: #1C232A; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); }
+        .nav-btn { font-size: 22px; color: #A0B0C0; cursor: pointer; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; transition: color 0.1s; }
+        
+        .dialer-input { width: 100%; padding: 12px; font-size: 30px; text-align: center; background: #0A0F14; border: 1px solid #3A4754; color: #6F7D8C; border-radius: 10px; margin-bottom: 15px; font-weight: bold; }
+        .dial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .dial-key { background: #232C37; padding: 14px; border-radius: 12px; font-size: 20px; font-weight: bold; border: 1px solid #344252; color: white; text-align: center; }
+        .dial-key:active { background: #6F7D8C; color: black; }
+        .msg-box { background: #232C37; padding: 14px; border-radius: 10px; margin-bottom: 10px; border-left: 5px solid #6F7D8C; }
+        .msg-sender { font-weight: bold; color: #6F7D8C; font-size: 14px; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+<div id="phone">
+    <div id="brand-header"> iFruit</div>
+    <div id="status-bar"><div class="status-icons">📶 💻 Wed</div><div id="clock">11:56</div><div>🔋</div></div>
+    <div id="app-header-bar">Snapmatic</div>
+
+    <div id="screen-content">
+        <div id="app-grid">
+            <div class="app-icon" onclick="openApp('Correo', 'text', '📩 BANDEJA DE ENTRADA:<br><br><b>De: Amanda De Santa</b><br>Michael, gastaste una fortuna en el club de golf otra vez. ¡La tarjeta fue rechazada! Arréglalo.')">
+                <div class="badge">7</div><div class="icon-shape" style="background: linear-gradient(135deg, #E67E22, #D35400);">✉️</div>
+            </div>
+            <div class="app-icon" onclick="openApp('Mensajes', 'messages')">
+                <div class="icon-shape" style="background: linear-gradient(135deg, #2ECC71, #27AE60);">💬</div>
+            </div>
+            <div class="app-icon" onclick="openApp('Lista de tareas', 'text', '📋 TAREAS:<br><br>1. Pagar la parte de Lester.<br>2. Ir a terapia con el Dr. Friedlander.<br>3. Esconder el auto de escape.')">
+                <div class="icon-shape" style="background: linear-gradient(135deg, #F1C40F, #F39C12);">📋</div>
+            </div>
+            <div class="app-icon" onclick="openApp('SecuroServ', 'text', '🛡️ STATUS SECUROSERV:<br><br>Conexión segura establecida en Rockford Hills.')">
+                <div class="icon-shape" style="background: linear-gradient(135deg, #9B59B6, #8E44AD);">☁️</div>
+            </div>
+            <div class="app-icon" onclick="openApp('Contactos', 'dialer')">
+                <div class="icon-shape" style="background: linear-gradient(135deg, #E74C3C, #C0392B);">📇</div>
+            </div>
+            <div class="app-icon" onclick="openApp('Ajustes', 'text', '⚙️ AJUSTES:<br><br>Propietario: Michael De Santa<br>Red: Los Santos Cellular')">
+                <div class="icon-shape" style="background: linear-gradient(135deg, #34495E, #2C3E50);">⚙️</div>
+            </div>
+            <div class="app-icon" onclick="openApp('Snapmatic', 'text', '📷 SNAPMATIC:<br><br>Error: Guarda tus fotos directamente en el Social Club.')">
+                <div class="icon-shape" style="background: linear-gradient(135deg, #F39C12, #D35400);">📷</div>
+            </div>
+            <div class="app-icon" onclick="openApp('Internet', 'text', '🌐 EYEFIND:<br><br>Último Bleet de Jimmy: \"Mi papá está gritándole a la televisión otra vez, qué sorpresa #LosSantos\".')">
+                <div class="icon-shape" style="background: linear-gradient(135deg, #3498DB, #2980B9);">🌐</div>
+            </div>
+        </div>
+
+        <div id="app-viewer">
+            <div id="app-title">App</div><div id="app-body">Contenido</div>
+            <div style="background:#C0392B; text-align:center; padding:12px; border-radius:10px; font-weight:bold; margin-top:auto; cursor:pointer;" onclick="closeApp()">CERRAR APP ✖</div>
+        </div>
+    </div>
+
+    <div id="nav-bar">
+        <div class="nav-btn" onclick="alert('Buscando en Eyefind...')">🔍</div>
+        <div class="nav-btn" onclick="closeApp()"></div>
+        <div class="nav-btn" onclick="closeApp()">➔</div>
+    </div>
+</div>
+
+<script>
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock').innerText = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+    }
+    setInterval(updateClock, 1000); updateClock();
+
+    function openApp(title, type, content = '') {
+        document.getElementById('app-header-bar').innerText = title;
+        const viewer = document.getElementById('app-viewer');
+        const appTitle = document.getElementById('app-title');
+        const appBody = document.getElementById('app-body');
+        appTitle.innerText = title; viewer.style.display = 'flex';
+        if (type === 'text') { appBody.innerHTML = content; }
+        else if (type === 'dialer') {
+            appBody.innerHTML = `<input type="text" class="dialer-input" id="phone-num" placeholder="Número..." readonly><div class="dial-grid">${[1,2,3,4,5,6,7,8,9,'*',0,'#'].map(n => `<div class="dial-key" onclick="pressKey('${n}')">${n}</div>`).join('')}</div><div style="background:linear-gradient(180deg, #6F7D8C 0%, #4B5663 100%); text-align:center; padding:14px; margin-top:15px; border-radius:10px; font-weight:bold;" onclick="alert('Conectando...')">CONECTAR</div>`;
+        } else if (type === 'messages') {
+
+appBody.innerHTML = <div class="msg-box"><div class="msg-sender">Lester Crest</div><div class="msg-text">Michael, los preparativos del golpe están listos. Reúnete conmigo en la fábrica.</div></div><div class="msg-box"><div class="msg-sender">Jimmy</div><div class="msg-text">Papá, necesito dinero para el juego online. No me ignores.</div></div>;
+}
+}
+function pressKey(key) { const input = document.getElementById('phone-num'); if(input) input.value += key; }
+function closeApp() { document.getElementById('app-viewer').style.display = 'none'; document.getElementById('app-header-bar').innerText = 'Snapmatic'; }
