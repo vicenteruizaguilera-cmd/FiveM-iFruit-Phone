@@ -1,202 +1,184 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Michael's iFruit Interface</title>
-    <style>
-        /* Reset and Base Phone Container Styles */
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            font-family: "Helvetica Neue", Arial, sans-serif;
-            overflow: hidden;
-            user-select: none;
-            background-color: transparent; /* Allows transparency in FiveM NUI */
+.app-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
 
-        /* The physical screen layout mimicking Michael's phone */
-        .ifruit-screen {
-            width: 100%;
-            height: 100%;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            
-            /* Michael's signature blue theme color fallback */
-            background-color: #0b518a; 
-            
-            /* CSS reconstruction of Michael's geometric/triangle abstract wallpaper */
-            background-image: 
-                linear-gradient(135deg, #0e5b9b 25%, transparent 25%), 
-                linear-gradient(225deg, #0e5b9b 25%, transparent 25%), 
-                linear-gradient(45deg, #0e5b9b 25%, transparent 25%), 
-                linear-gradient(315deg, #0e5b9b 25%, #073f6e 25%);
-            background-position: 40px 0, 40px 0, 0 0, 0 0;
-            background-size: 80px 80px;
-            background-repeat: repeat;
-        }
-
-        /* Top Header Container (iFruit text branding) */
-        .ifruit-header {
-            width: 100%;
-            text-align: center;
-            padding-top: 40px; /* Leaves space for the status bar above it */
-            padding-bottom: 10px;
-        }
-
-        .ifruit-logo {
-            font-size: 2.2rem;
+        .app-label {
+            color: var(--text-color);
+            font-size: 11px;
+            margin-top: 6px;
             font-weight: 500;
-            color: #ffffff;
-            letter-spacing: -1px;
-            text-shadow: 0px 2px 4px rgba(0,0,0,0.4);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            text-align: center;
         }
 
-        /* 3x3 Application Grid Definition */
-        .ifruit-app-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-gap: 25px 15px;
-            padding: 10px 20px;
-            justify-items: center;
-            align-content: center;
-            flex-grow: 1;
-        }
-
-        /* Base class cutting out the app squares using CSS Sprite Mapping */
-        .ifruit-icon {
-            width: 76px;
-            height: 76px;
-            /* Using the screenshot provided to slice the icons dynamically */
-            background-image: url('https://canvas.net'); 
-            background-size: 295px auto;
-            background-repeat: no-repeat;
-            border-radius: 14px;
-            cursor: pointer;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
-            transition: transform 0.1s ease, filter 0.1s ease;
-        }
-
-        /* Hover selection styling for mouse/controller focus */
-        .ifruit-icon:hover {
-            transform: scale(1.06);
-            filter: brightness(1.15);
-        }
-
-        /* --- ROW 1 ICON ALIGNMENTS --- */
-        .icon-email    { background-position: -10px -106px; }
-        .icon-messages { background-position: -109px -106px; }
-        .icon-joblist  { background-position: -208px -106px; }
-
-        /* --- ROW 2 ICON ALIGNMENTS --- */
-        .icon-cloud    { background-position: -10px -228px; }
-        .icon-contacts { background-position: -109px -228px; }
-        .icon-settings { background-position: -208px -228px; }
-
-        /* --- ROW 3 ICON ALIGNMENTS --- */
-        .icon-camera   { background-position: -10px -350px; }
-        .icon-internet { background-position: -109px -350px; }
-
-        /* Hidden spacer to keep row 3 aligned correctly */
-        .icon-blank {
-            width: 76px;
-            height: 76px;
-            visibility: hidden;
-        }
-
-        /* Bottom Navigation Dock Container */
-        .ifruit-footer-dock {
-            width: 100%;
-            height: 65px;
-            background: linear-gradient(to bottom, #111111 0%, #000000 100%);
-            border-top: 2px solid #222222;
-            display: flex;
-            justify-content: space-around;
+        /* Capa de interfaz interna */
+        .app-overlay {
+            position: absolute;
+            top: 44px; left: 0; width: 100%; height: calc(100% - 104px);
+            background: rgba(0,0,0,0.95);
+            color: white;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            box-sizing: border-box;
+            font-size: 24px;
+            z-index: 10;
         }
 
-        /* Bottom Action Buttons (Plus and Arrow) */
-        .dock-btn {
-            width: 50px;
-            height: 100%;
-            background-image: url('https://canvas.net');
-            background-size: 295px auto;
-            background-repeat: no-repeat;
+        /* Barra de navegación inferior estilo GTA V auténtico */
+        .bottom-nav {
+            height: 60px; /* Aumentado para dar espacio a botones grandes */
+            background-color: #050505;
+            display: flex;
+            justify-content: center; /* Alinea los botones al centro */
+            align-items: center;
+            border-top: 2px solid rgba(255,255,255,0.15);
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        /* Línea gris vertical divisoria central del juego */
+        .bottom-nav::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 1px;
+            background-color: rgba(255, 255, 255, 0.15);
+            z-index: 2;
+        }
+
+        .nav-btn {
+            font-size: 32px; /* Íconos tipográficos notablemente más grandes */
             cursor: pointer;
-            transition: transform 0.1s ease;
+            width: 50%; /* Cada botón ocupa exactamente la mitad del ancho */
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.1s ease;
+            position: relative;
+            z-index: 1;
         }
 
-        .dock-btn:hover {
-            transform: scale(1.1);
+        /* Efecto sutil al presionar los botones físicos */
+        .nav-btn:active { 
+            background-color: rgba(255, 255, 255, 0.05); 
         }
-
-        /* Action button alignment points based on screenshot footer */
-        .btn-plus {
-            background-position: -121px -538px;
+        
+        .nav-btn.add { 
+            color: #2ecc71; 
+            font-weight: 300; 
         }
-
-        .btn-back {
-            background-position: -219px -538px;
+        
+        .nav-btn.back { 
+            color: #e74c3c; 
+            font-weight: bold;
+            font-size: 28px; /* Pequeño ajuste de escala para la flecha */
         }
     </style>
 </head>
 <body>
 
-    <!-- Main screen canvas wrapper -->
-    <div class="ifruit-screen">
-        
-        <!-- Header Text -->
-        <div class="ifruit-header">
-            <div class="ifruit-logo">iFruit</div>
+    <div class="phone-container">
+        <div class="screen">
+            
+            <div class="top-bar">
+                <div class="status-left">
+                    <div class="bar b1"></div><div class="bar b2"></div><div class="bar b3"></div><div class="bar b4"></div>
+                </div>
+                <div class="ifruit-logo"> <span>iFruit</span></div>
+                <div class="status-right"><div class="battery"><div class="battery-level"></div></div></div>
+            </div>
+
+            <div class="apps-grid" id="appsGrid">
+                <div class="app-item selected" data-app="Contactos">
+                    <img src="image_igUw7S.png" alt="Contactos" class="app-icon">
+                    <span class="app-label">Contactos</span>
+                </div>
+                <div class="app-item" data-app="Mensajes">
+                    <img src="image_ZZF4s5.png" alt="Mensajes" class="app-icon">
+                    <span class="app-label">Mensajes</span>
+                </div>
+                <div class="app-item" data-app="Correo">
+                    <img src="image_g_Z4ln.png" alt="Correo" class="app-icon">
+                    <span class="app-label">Correo</span>
+                </div>
+                <div class="app-item" data-app="Internet">
+                    <img src="image_YB4HHV.png" alt="Internet" class="app-icon">
+                    <span class="app-label">Internet</span>
+                </div>
+                <div class="app-item" data-app="Ajustes">
+                    <img src="image_hCk1t6.png" alt="Ajustes" class="app-icon">
+                    <span class="app-label">Ajustes</span>
+                </div>
+            </div>
+
+            <div class="app-overlay" id="appOverlay">App Abierta</div>
+
+            <div class="bottom-nav">
+                <!-- Botón Verde izquierdo que ocupa el 50% central -->
+                <div class="nav-btn add" id="btnSelect" title="Seleccionar / Abrir">+</div>
+                <!-- Botón Rojo derecho que ocupa el 50% central -->
+                <div class="nav-btn back" id="btnBack" title="Volver / Cerrar">↩</div>
+            </div>
+
         </div>
-
-        <!-- Michael's Home Grid Apps -->
-        <div class="ifruit-app-grid">
-            <!-- Row 1 -->
-            <div class="ifruit-icon icon-email" onclick="triggerFiveMApp('email')"></div>
-            <div class="ifruit-icon icon-messages" onclick="triggerFiveMApp('messages')"></div>
-            <div class="ifruit-icon icon-joblist" onclick="triggerFiveMApp('joblist')"></div>
-
-            <!-- Row 2 -->
-            <div class="ifruit-icon icon-cloud" onclick="triggerFiveMApp('securoserv')"></div>
-            <div class="ifruit-icon icon-contacts" onclick="triggerFiveMApp('contacts')"></div>
-            <div class="ifruit-icon icon-settings" onclick="triggerFiveMApp('lscustoms')"></div>
-
-            <!-- Row 3 -->
-            <div class="ifruit-icon icon-camera" onclick="triggerFiveMApp('camera')"></div>
-            <div class="ifruit-icon icon-internet" onclick="triggerFiveMApp('internet')"></div>
-            <div class="icon-blank"></div> 
-        </div>
-
-        <!-- Bottom Footer Navigation Dock -->
-        <div class="ifruit-footer-dock">
-            <div class="dock-btn btn-plus" onclick="triggerFiveMApp('action_plus')"></div>
-            <div class="dock-btn btn-back" onclick="triggerFiveMApp('action_back')"></div>
-        </div>
-
     </div>
 
-    <!-- JavaScript NUI Engine Bridge to communicate with PappaNiels Mod -->
     <script>
-        function triggerFiveMApp(appName) {
-            console.log("App selected: " + appName);
-            
-            // Standard NUI callback routine sending data back to FiveM Client scripts
-            fetch(`https://${GetParentResourceName()}/OnLocalPhoneClick`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8'
-                },
-                body: JSON.stringify({
-                    button: appName
-                })
-            }).catch(err => console.log("NUI bypass notice: Not running directly inside FiveM runtime."));
+        const apps = document.querySelectorAll('.app-item');
+        const btnSelect = document.getElementById('btnSelect');
+        const btnBack = document.getElementById('btnBack');
+        const overlay = document.getElementById('appOverlay');
+        
+        let currentIndex = 0;
+        let isAppOpen = false;
+
+        function updateSelection() {
+            apps.forEach((app, index) => {
+                if(index === currentIndex) {
+                    app.classList.add('selected');
+                } else {
+                    app.classList.remove('selected');
+                }
+            });
         }
-    </script>
-</body>
-</html>
+
+        let clickTimeout;
+        btnSelect.addEventListener('click', () => {
+            if (isAppOpen) return;
+
+            if (!clickTimeout) {
+                clickTimeout = setTimeout(() => {
+                    currentIndex = (currentIndex + 1) % apps.length;
+                    updateSelection();
+                    clickTimeout = null;
+                }, 250);
+            } else {
+                clearTimeout(clickTimeout);
+                clickTimeout = null;
+                openApp();
+            }
+        });
+
+        apps.forEach((app, index) => {
+            app.addEventListener('click', () => {
+                currentIndex = index;
+                updateSelection();
+                openApp();
+            });
+        });
+
+        function openApp() {
+            const appName = apps[currentIndex].getAttribute('data-app');
+            overlay.innerText = `${appName}`;
+            overlay.style.display = 'flex';
+            isAppOpen = true;
+            
+            if (window.invokeNative) {fetch(https://${GetParentResourceName()}/openApp, {method: 'POST',headers: { 'Content-Type': 'application/json' },body: JSON.stringify({ app: appName })}).catch(err => console.log('NUI Fetch Ignored'));}}btnBack.addEventListener('click', () => {if (isAppOpen) {overlay.style.display = 'none';isAppOpen = false;if (window.invokeNative) {fetch(https://${GetParentResourceName()}/closeApp, {method: 'POST'}).catch(err => console.log('NUI Fetch Ignored'));}} else {currentIndex = 0;updateSelection();}});
