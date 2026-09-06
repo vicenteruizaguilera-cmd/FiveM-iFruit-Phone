@@ -1,159 +1,184 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iFruit OS - GTA V</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Arial", sans-serif; user-select: none; }
-        body { background-color: #0b0b0b; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+.app-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .app-label {
+            color: var(--text-color);
+            font-size: 11px;
+            margin-top: 6px;
+            font-weight: 500;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            text-align: center;
+        }
+
+        /* Capa de interfaz interna */
+        .app-overlay {
+            position: absolute;
+            top: 44px; left: 0; width: 100%; height: calc(100% - 104px);
+            background: rgba(0,0,0,0.95);
+            color: white;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            z-index: 10;
+        }
+
+        /* Barra de navegación inferior estilo GTA V auténtico */
+        .bottom-nav {
+            height: 60px; /* Aumentado para dar espacio a botones grandes */
+            background-color: #050505;
+            display: flex;
+            justify-content: center; /* Alinea los botones al centro */
+            align-items: center;
+            border-top: 2px solid rgba(255,255,255,0.15);
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        /* Línea gris vertical divisoria central del juego */
+        .bottom-nav::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 1px;
+            background-color: rgba(255, 255, 255, 0.15);
+            z-index: 2;
+        }
+
+        .nav-btn {
+            font-size: 32px; /* Íconos tipográficos notablemente más grandes */
+            cursor: pointer;
+            width: 50%; /* Cada botón ocupa exactamente la mitad del ancho */
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.1s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Efecto sutil al presionar los botones físicos */
+        .nav-btn:active { 
+            background-color: rgba(255, 255, 255, 0.05); 
+        }
         
-        /* Chasis del Teléfono al estilo Michael */
-        #phone { width: 100%; height: 100%; max-width: 400px; max-height: 850px; background: linear-gradient(180deg, #2d2d2d 0%, #151515 100%); position: relative; display: flex; flex-direction: column; overflow: hidden; border-radius: 40px; box-shadow: 0px 15px 35px rgba(0,0,0,0.8); border: 8px solid #3a3a3a; }
+        .nav-btn.add { 
+            color: #2ecc71; 
+            font-weight: 300; 
+        }
         
-        /* Barra de estado superior de iFruit */
-        #status-bar { height: 35px; display: flex; justify-content: space-between; align-items: center; padding: 0 25px; color: #ffffff; font-size: 13px; font-weight: bold; background: rgba(0,0,0,0.4); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        #clock { font-weight: 900; }
-        
-        /* Contenido de la Pantalla Principal */
-        #screen-content { flex: 1; padding: 25px 15px; display: flex; flex-direction: column; background: radial-gradient(circle, #3a3f4d 0%, #1a1c23 100%); }
-        
-        /* Cuadrícula de Apps estilo iOS Viejo / Skeuomorphic de iFruit */
-        #app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 15px; padding-top: 10px; }
-        .app-icon { display: flex; flex-direction: column; align-items: center; cursor: pointer; text-decoration: none; }
-        
-        /* Iconos Glossy Brillantes con degradados de GTA V */
-        .icon-shape { width: 72px; height: 72px; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 34px; box-shadow: inset 0px 4px 8px rgba(255,255,255,0.3), 0px 6px 12px rgba(0,0,0,0.5); border: 1px solid rgba(0,0,0,0.4); position: relative; overflow: hidden; transition: transform 0.1s; }
-        .icon-shape::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 100%); border-radius: 20px 20px 0 0; }
-        .app-icon:active .icon-shape { transform: scale(0.9); }
-        
-        .app-label { color: #ffffff; font-size: 12px; margin-top: 8px; font-weight: 600; text-shadow: 1px 2px 4px rgba(0,0,0,0.9); text-align: center; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
-        
-        /* Visor de Aplicaciones abiertas */
-        #app-viewer { display: none; position: absolute; top: 35px; bottom: 65px; left: 0; right: 0; background: #181a1f; color: white; padding: 20px; flex-direction: column; z-index: 10; animation: fadeIn 0.2s ease-in-out; }
-        #app-title { font-size: 22px; font-weight: bold; margin-bottom: 20px; border-bottom: 2px solid #2ecc71; padding-bottom: 8px; text-transform: uppercase; color: #2ecc71; letter-spacing: 1px; }
-        #app-body { flex: 1; font-size: 15px; line-height: 1.6; overflow-y: auto; }
-        
-        /* Barra de navegación inferior con los botones nativos de GTA (Aceptar/Atrás) */
-        #nav-bar { height: 65px; background: rgba(0,0,0,0.6); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); padding: 0 40px; }
-        .nav-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 22px; cursor: pointer; color: white; font-weight: bold; border: 2px solid rgba(0,0,0,0.3); box-shadow: 0 4px 8px rgba(0,0,0,0.4); transition: transform 0.1s; }
-        .nav-btn:active { transform: scale(0.85); }
-        .btn-back { background: linear-gradient(180deg, #ff4b4b 0%, #c0392b 100%); text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
-        .btn-select { background: linear-gradient(180deg, #2ecc71 0%, #27ae60 100%); text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
-        
-        /* Estilos de las Apps Internas */
-        .dialer-input { width: 100%; padding: 15px; font-size: 32px; text-align: center; background: #0f1013; border: 1px solid #333; color: #2ecc71; border-radius: 12px; margin-bottom: 20px; font-weight: bold; letter-spacing: 2px; }
-        .dial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: center; }
-        .dial-key { background: linear-gradient(180deg, #3a3f4d 0%, #242730 100%); padding: 15px; border-radius: 14px; font-size: 22px; font-weight: bold; border: 1px solid #4f5568; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        .dial-key:active { background: #2ecc71; color: black; }
-        
-        .msg-box { background: #242730; padding: 14px; border-radius: 12px; margin-bottom: 12px; border-left: 5px solid #2ecc71; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-        .msg-sender { font-weight: bold; color: #2ecc71; font-size: 14px; margin-bottom: 4px; text-transform: uppercase; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .nav-btn.back { 
+            color: #e74c3c; 
+            font-weight: bold;
+            font-size: 28px; /* Pequeño ajuste de escala para la flecha */
+        }
     </style>
 </head>
 <body>
 
-<div id="phone">
-    <!-- Barra Superior -->
-    <div id="status-bar">
-        <div>iFruit</div>
-        <div id="clock">12:00</div>
-    </div>
+    <div class="phone-container">
+        <div class="screen">
+            
+            <div class="top-bar">
+                <div class="status-left">
+                    <div class="bar b1"></div><div class="bar b2"></div><div class="bar b3"></div><div class="bar b4"></div>
+                </div>
+                <div class="ifruit-logo"> <span>iFruit</span></div>
+                <div class="status-right"><div class="battery"><div class="battery-level"></div></div></div>
+            </div>
 
-    <!-- Pantalla de Apps -->
-    <div id="screen-content">
-        <div id="app-grid">
-            <div class="app-icon" onclick="openApp('Contactos', 'dialer')">
-                <div class="icon-shape" style="background: linear-gradient(135deg, #5AD47D, #1E824C);">📇</div>
-                <div class="app-label">Contactos</div>
+            <div class="apps-grid" id="appsGrid">
+                <div class="app-item selected" data-app="Contactos">
+                    <img src="image_igUw7S.png" alt="Contactos" class="app-icon">
+                    <span class="app-label">Contactos</span>
+                </div>
+                <div class="app-item" data-app="Mensajes">
+                    <img src="image_ZZF4s5.png" alt="Mensajes" class="app-icon">
+                    <span class="app-label">Mensajes</span>
+                </div>
+                <div class="app-item" data-app="Correo">
+                    <img src="image_g_Z4ln.png" alt="Correo" class="app-icon">
+                    <span class="app-label">Correo</span>
+                </div>
+                <div class="app-item" data-app="Internet">
+                    <img src="image_YB4HHV.png" alt="Internet" class="app-icon">
+                    <span class="app-label">Internet</span>
+                </div>
+                <div class="app-item" data-app="Ajustes">
+                    <img src="image_hCk1t6.png" alt="Ajustes" class="app-icon">
+                    <span class="app-label">Ajustes</span>
+                </div>
             </div>
-            <div class="app-icon" onclick="openApp('Mensajes', 'messages')">
-                <div class="icon-shape" style="background: linear-gradient(135deg, #54A0FF, #10ACF5);">💬</div>
-                <div class="app-label">Mensajes</div>
+
+            <div class="app-overlay" id="appOverlay">App Abierta</div>
+
+            <div class="bottom-nav">
+                <!-- Botón Verde izquierdo que ocupa el 50% central -->
+                <div class="nav-btn add" id="btnSelect" title="Seleccionar / Abrir">+</div>
+                <!-- Botón Rojo derecho que ocupa el 50% central -->
+                <div class="nav-btn back" id="btnBack" title="Volver / Cerrar">↩</div>
             </div>
-            <div class="app-icon" onclick="openApp('SecuroServ', 'text', '🔒 CONEXIÓN SECUROSERV ENCRIPTADA... <br><br>Bienvenido, Jefe. No tienes contratos de exportación de vehículos ni misiones VIP activas en la sesión actual.')">
-                <div class="icon-shape" style="background: linear-gradient(135deg, #2C3E50, #11171D);">🛡️</div>
-                <div class="app-label">SecuroServ</div>
-            </div>
-            <div class="app-icon" onclick="openApp('Eyefind', 'text', '🔍 Bienvenido a www.eyefind.info <br><br>El buscador número uno de San Andreas.<br><br>⚠️ Error de conexión: Los servidores en Liberty City están caídos por mantenimiento.')">
-                <div class="icon-shape" style="background: linear-gradient(135deg, #A55EEA, #6F1EAA);">🌐</div>
-                <div class="app-label">Internet</div>
-            </div>
-            <div class="app-icon" onclick="openApp('LS Customs', 'text', '🚗 LOS SANTOS CUSTOMS INFO:<br><br>Tu vehículo actual ya tiene el blindaje al 100% y el motor a Nivel 4.<br><br>Pasa por el taller de Burton si deseas cambiar el color de la pintura principal.')">
-                <div class="icon-shape" style="background: linear-gradient(135deg, #FF9F43, #D35400);">🔧</div>
-                <div class="app-label">LS Customs</div>
-            </div>
-            <div class="app-icon" onclick="openApp('Snapmatic', 'text', '📷 SNAPMATIC ERROR:<br><br>No se detecta la tarjeta de memoria en la simulación del dispositivo para almacenar las fotografías.')">
-                <div class="icon-shape" style="background: linear-gradient(135deg, #FF6B6B, #EE5253);">📷</div>
-                <div class="app-label">Snapmatic</div>
-            </div>
+
         </div>
     </div>
 
-    <!-- Pantalla Interna de Apps Abiertas -->
-    <div id="app-viewer">
-        <div id="app-title">App</div>
-        <div id="app-body">Contenido</div>
-    </div>
-
-    <!-- Botones de Navegación del Mando de GTA V -->
-    <div id="nav-bar">
-        <div class="nav-btn btn-back" onclick="closeApp()">✖</div>
-        <div class="nav-btn btn-select" onclick="actionBtn()">✓</div>
-    </div>
-</div>
-
-<script>
-    // Actualizar Reloj en tiempo real
-    function updateClock() {
-        const now = new Date();
-        let hours = now.getHours().toString().padStart(2, '0');
-        let minutes = now.getMinutes().toString().padStart(2, '0');
-        document.getElementById('clock').innerText = hours + ':' + minutes;
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    // Lógica para abrir Apps
-    function openApp(title, type, content = '') {
-        const viewer = document.getElementById('app-viewer');
-        const appTitle = document.getElementById('app-title');
-        const appBody = document.getElementById('app-body');
+    <script>
+        const apps = document.querySelectorAll('.app-item');
+        const btnSelect = document.getElementById('btnSelect');
+        const btnBack = document.getElementById('btnBack');
+        const overlay = document.getElementById('appOverlay');
         
-        appTitle.innerText = title;
-        viewer.style.display = 'flex';
+        let currentIndex = 0;
+        let isAppOpen = false;
 
-        if (type === 'text') {
-            appBody.innerHTML = content;
-        } else if (type === 'dialer') {
-            appBody.innerHTML = `
-                <input type="text" class="dialer-input" id="phone-num" placeholder="MARCAR..." readonly>
-                <div class="dial-grid">
-                    ${[1,2,3,4,5,6,7,8,9,'*',0,'#'].map(n => `<div class="dial-key" onclick="pressKey('${n}')">${n}</div>`).join('')}
-                </div>
-                <div style="background:linear-gradient(180deg, #2ecc71 0%, #27ae60 100%); text-align:center; padding:15px; margin-top:20px; border-radius:12px; font-weight:bold; font-size:18px; color:white; border:1px solid #27ae60; box-shadow:0 4px 10px rgba(46,204,113,0.4);" onclick="alert('Llamando de forma encubierta a la red de San Andreas...')">CONECTAR</div>
-            `;
-        } else if (type === 'messages') {
-            appBody.innerHTML = `
+        function updateSelection() {
+            apps.forEach((app, index) => {
+                if(index === currentIndex) {
+                    app.classList.add('selected');
+                } else {
+                    app.classList.remove('selected');
+                }
+            });
+        }
 
-Lester CrestTengo los planos listos para el golpe al casino. Te veo en el salón de maquinitas (Arcade). No vayas a tardar.
-Ron el Nervioso¡Trevor está furioso! Dice que las entregas de mercancía en el aeródromo de Sandy Shores se retrasaron por tu culpa. ¡Ayuda!
-DesconocidoTe estamos vigilando. La organización rival sabe exactamente lo que hiciste con el cargamento de armas ilegales.
-`;
-}
-}
-function pressKey(key) {
-const input = document.getElementById('phone-num');
-if(input) input.value += key;
-}
-function closeApp() {
-document.getElementById('app-viewer').style.display = 'none';
-}
-function actionBtn() {
-alert("iFruit OS: Comando ejecutado correctamente en el servidor.");
-}
+        let clickTimeout;
+        btnSelect.addEventListener('click', () => {
+            if (isAppOpen) return;
 
+            if (!clickTimeout) {
+                clickTimeout = setTimeout(() => {
+                    currentIndex = (currentIndex + 1) % apps.length;
+                    updateSelection();
+                    clickTimeout = null;
+                }, 250);
+            } else {
+                clearTimeout(clickTimeout);
+                clickTimeout = null;
+                openApp();
+            }
+        });
 
+        apps.forEach((app, index) => {
+            app.addEventListener('click', () => {
+                currentIndex = index;
+                updateSelection();
+                openApp();
+            });
+        });
 
+        function openApp() {
+            const appName = apps[currentIndex].getAttribute('data-app');
+            overlay.innerText = `${appName}`;
+            overlay.style.display = 'flex';
+            isAppOpen = true;
+            
+            if (window.invokeNative) {fetch(https://${GetParentResourceName()}/openApp, {method: 'POST',headers: { 'Content-Type': 'application/json' },body: JSON.stringify({ app: appName })}).catch(err => console.log('NUI Fetch Ignored'));}}btnBack.addEventListener('click', () => {if (isAppOpen) {overlay.style.display = 'none';isAppOpen = false;if (window.invokeNative) {fetch(https://${GetParentResourceName()}/closeApp, {method: 'POST'}).catch(err => console.log('NUI Fetch Ignored'));}} else {currentIndex = 0;updateSelection();}});
